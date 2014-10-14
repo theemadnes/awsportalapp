@@ -18,7 +18,7 @@ for i in regionStrList:
 
 
 instancetracker.cgd6ut3eybll.us-west-2.rds.amazonaws.com:3306
-
+zip -r awsportalapp.zip .
 
 # default
 db = create_engine('mysql+pymysql://alex:testpassword@instancetracker.cgd6ut3eybll.us-west-2.rds.amazonaws.com/instanceTracker')
@@ -31,6 +31,9 @@ CREATE TABLE instances (
   availability_zone CHAR(20) NOT NULL,
   PRIMARY KEY (sequence_id)
 );
+
+# enable hidden files 
+defaults write com.apple.finder AppleShowAllFiles TRUE
 
 
 import boto.ec2
