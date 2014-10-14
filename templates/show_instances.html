@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+{% block body %}
+{% if session.logged_in %}
+<form action="{{ url_for('add_instance') }}" method=post class=add-instance>
+<dl>
+<dd><input type=submit value="Create a new instance">
+</dl>
+</form>
+<ul class=instances>
+{% for instance in instance_tracker %}
+<li><h2>{{ instance.instance_id }}</h2>
+{{ instance.instance_type }}
+{{ instance.availability_zone }}
+<form action="{{ url_for('terminate_instance') }}" method=post class=terminate-instance>
+<input type=submit value="Terminate {{ instance.instance_id }}" name=instance_id>
+</form>
+{% else %}
+<li><em>Where are all the instances...</em>
+{% endfor %}
+</ul>
+{% endif %}
+
+{% endblock %}
