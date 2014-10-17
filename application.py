@@ -63,8 +63,8 @@ def teardown_request(exception):
 @app.route('/')
 def show_instances():
 	cur = getattr(g, 'db', None).cursor()
-	cur.execute('select instance_id, instance_type, availability_zone from instances order by sequence_id desc')
-	instance_tracker = [dict(instance_id=row[0], instance_type=row[1], availability_zone=row[2]) for row in cur.fetchall()]
+	cur.execute('select instance_id, instance_type, availability_zone, public_dns_name from instances order by sequence_id desc')
+	instance_tracker = [dict(instance_id=row[0], instance_type=row[1], availability_zone=row[2], public_dns_name=row[3]) for row in cur.fetchall()]
 	return render_template('show_instances.html', instance_tracker=instance_tracker)
 
 
@@ -77,7 +77,7 @@ def add_instance():
 	reservation_object = conn.run_instances(image_id='ami-d13845e1', key_name='mattsona-051214', instance_type='t2.micro', security_groups=['SSH-DefaultVPC'], block_device_map = bdm, placement = azStrList[(random.randint(0, len(azStrList) - 1))])
 
 	# wait to submit DB entries so we have the data, and update to get DNS info
-	time.sleep(2)
+	time.sleep(4)
 	reservation_object.instances[0].update()
 
 	instance_id = reservation_object.instances[0].id
@@ -91,12 +91,11 @@ def add_instance():
 	print instance_id
 	print instance_type
 	print availability_zone
-	print "See below for dns"
 	print public_dns
 
 	# update the DB
 	cur = getattr(g, 'db', None).cursor()
-	cur.execute('insert into instances (instance_id, instance_type, availability_zone) values (\'%s\', \'%s\', \'%s\')' % (instance_id, instance_type, availability_zone))
+	cur.execute('insert into instances (instance_id, instance_type, availability_zone, public_dns_name) values (\'%s\', \'%s\', \'%s\', \'%s\')' % (instance_id, instance_type, availability_zone, public_dns))
 	g.db.commit()
 
 	flash('New instance ' + instance_id + ' was created')
