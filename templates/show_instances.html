@@ -9,8 +9,9 @@
 <ul class=instances>
 {% for instance in instance_tracker %}
 <li><h2>{{ instance.instance_id }}</h2>
-{{ instance.instance_type }}
-{{ instance.availability_zone }}
+<li>Instance Type: {{ instance.instance_type }}
+<li>Availability Zone: {{ instance.availability_zone }}
+<li>Instance Address: {{ instance.public_dns_name }}
 <form action="{{ url_for('terminate_instance') }}" method=post class=terminate-instance>
 <input type=submit value="Terminate {{ instance.instance_id }}" name=instance_id>
 </form>

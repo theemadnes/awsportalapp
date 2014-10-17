@@ -76,12 +76,14 @@ def add_instance():
 	#return to use a reservation for the new instance, selecting a "random" AZ to deploy to
 	reservation_object = conn.run_instances(image_id='ami-d13845e1', key_name='mattsona-051214', instance_type='t2.micro', security_groups=['SSH-DefaultVPC'], block_device_map = bdm, placement = azStrList[(random.randint(0, len(azStrList) - 1))])
 
-	# wait to submit DB entries so we have the data 
+	# wait to submit DB entries so we have the data, and update to get DNS info
 	time.sleep(2)
+	reservation_object.instances[0].update()
 
 	instance_id = reservation_object.instances[0].id
 	instance_type = reservation_object.instances[0].instance_type
 	availability_zone = reservation_object.instances[0].placement
+	public_dns = reservation_object.instances[0].public_dns_name
 
 	# tag the instance
 	reservation_object.instances[0].add_tag("Name", INSTANCE_TAG)
@@ -89,6 +91,8 @@ def add_instance():
 	print instance_id
 	print instance_type
 	print availability_zone
+	print "See below for dns"
+	print public_dns
 
 	# update the DB
 	cur = getattr(g, 'db', None).cursor()
